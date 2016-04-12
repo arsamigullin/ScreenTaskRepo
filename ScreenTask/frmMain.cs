@@ -113,7 +113,8 @@ namespace ScreenTask
             Log("Localhost URL : " + "http://localhost:" + numPort.Value.ToString() + "/");
             while (isWorking)
             {
-                var ctx = await serv.GetContextAsync();
+                //var ctx = await serv.GetContextAsync();
+                var ctx = serv.GetContext();
                 //Screenshot();
                 var resPath = ctx.Request.Url.LocalPath;
                 if (resPath == "/") // Route The Root Dir to the Index Page
