@@ -80,7 +80,7 @@ namespace ScreenTask
                 isWorking = true;
                 Log("Starting Server, Please Wait...");
                 await AddFirewallRule((int)numPort.Value);
-                Task.Factory.StartNew(() => CaptureScreenEvery((int)numShotEvery.Value)).Wait();
+             //   Task.Factory.StartNew(() => CaptureScreenEvery((int)numShotEvery.Value)).Wait();
                 btnStartServer.Tag = "stop";
                 btnStartServer.Text = "Stop Server";
                 await StartServer();
@@ -113,34 +113,49 @@ namespace ScreenTask
             Log("Localhost URL : " + "http://localhost:" + numPort.Value.ToString() + "/");
             while (isWorking)
             {
-                //var ctx = await serv.GetContextAsync();
-                var ctx = serv.GetContext();
+                var ctx = await serv.GetContextAsync();
+                //var ctx = serv.GetContext();
                 //Screenshot();
                 var resPath = ctx.Request.Url.LocalPath;
+                var page = Application.StartupPath + "/WebServer";
                 if (resPath == "/") // Route The Root Dir to the Index Page
-                    resPath += "index.html";
-                var page = Application.StartupPath + "/WebServer" + resPath;
-                bool fileExist;
-                lock (locker)
-                    fileExist = File.Exists(page);
-                if (!fileExist)
                 {
-                    var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Error 404 , File Not Found </h1><hr><a href=\".\\\">Back to Home</a>");
-                    ctx.Response.ContentType = "text/html";
-                    ctx.Response.StatusCode = 404;
-                    try
-                    {
-                        await ctx.Response.OutputStream.WriteAsync(errorPage, 0, errorPage.Length);
-                    }
-                    catch (Exception ex)
-                    {
-
-
-                    }
-                    ctx.Response.Close();
-                    continue;
+                    resPath += "index.html";
+                    page += resPath;
                 }
+                else if (resPath.Contains("bootstrap.min.css"))
+                {
+                    page += resPath;
+                }
+                else
+                {
+                    resPath += "_" + DateTime.Now.Ticks + ".jpeg";
+                    page += resPath;
+                    await CaptureScreenEvery((int)numShotEvery.Value, page);
+                }
+          
+               // bool fileExist;
+              //  lock (locker)
+               //     fileExist = File.Exists(page);
+                //if (!fileExist)
+                //{
+                //    var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Error 404 , File Not Found </h1><hr><a href=\".\\\">Back to Home</a>");
+                //    ctx.Response.ContentType = "text/html";
+                //    ctx.Response.StatusCode = 404;
+                //    try
+                //    {
+                //        await ctx.Response.OutputStream.WriteAsync(errorPage, 0, errorPage.Length);
+                //    }
+                //    catch (Exception ex)
+                //    {
 
+
+                //    }
+                //    ctx.Response.Close();
+                //    continue;
+                //}
+               // string fileName = "ScreenTask_" + DateTime.Now.Ticks+".jpeg";
+             
 
                 if (isPrivateTask)
                 {
@@ -185,9 +200,9 @@ namespace ScreenTask
                 byte[] filedata;
 
                 // Required for One-Time Access of the file {Reader\Writer Problem in OS}
-                rwl.AcquireReaderLock(Timeout.Infinite);
+               // rwl.AcquireReaderLock(Timeout.Infinite);
                 filedata = File.ReadAllBytes(page);
-                rwl.ReleaseReaderLock();
+              //  rwl.ReleaseReaderLock();
 
                 var fileinfo = new FileInfo(page);
                 if (fileinfo.Extension == ".css") // important for IE -> Content-Type must be defiend for CSS files unless will ignored !!!
@@ -201,10 +216,11 @@ namespace ScreenTask
                 try
                 {
                     await ctx.Response.OutputStream.WriteAsync(filedata, 0, filedata.Length);
+                   if (page.Contains("jpeg")) File.Delete(page);
                 }
                 catch (Exception ex)
                 {
-
+                   if (page.Contains("jpeg")) File.Delete(page);
                     /*
                         Do Nothing !!! this is the Only Effective Solution for this Exception : 
                         the specified network name is no longer available
@@ -217,27 +233,27 @@ namespace ScreenTask
             }
 
         }
-        private async Task CaptureScreenEvery(int msec)
+        private async Task CaptureScreenEvery(int msec, string name )
         {
-            while (isWorking)
-            {
+         //   while (isWorking)
+           // {
                 if (isTakingScreenshots)
                 {
-                    TakeScreenshot(isMouseCapture);
+                    TakeScreenshot(isMouseCapture, name);
                     msec = (int)numShotEvery.Value;
                     await Task.Delay(msec);
                 }
 
 
-            }
+           // }
         }
-        private void TakeScreenshot(bool captureMouse)
+        private void TakeScreenshot(bool captureMouse, string name)
         {
             if (captureMouse)
             {
                 var bmp = ScreenCapturePInvoke.CaptureFullScreen(true);
                 rwl.AcquireWriterLock(Timeout.Infinite);
-                bmp.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", ImageFormat.Jpeg);
+                bmp.Save(Application.StartupPath + "/WebServer" + "/"+name, ImageFormat.Jpeg);
                 rwl.ReleaseWriterLock();
                 if (isPreview)
                 {
@@ -255,9 +271,9 @@ namespace ScreenTask
                 {
                    g.CopyFromScreen(new Point(bounds.X, 0), new Point(bounds.Y, 0), bounds.Size);
                 }
-                rwl.AcquireWriterLock(Timeout.Infinite);
-                bitmap.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", ImageFormat.Jpeg);
-                rwl.ReleaseWriterLock();
+         //       rwl.AcquireWriterLock(Timeout.Infinite);
+                bitmap.Save(name, ImageFormat.Jpeg);
+               // rwl.ReleaseWriterLock();
 
                 if (isPreview)
                 {
