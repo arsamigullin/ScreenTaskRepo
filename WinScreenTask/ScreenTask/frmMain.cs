@@ -119,7 +119,7 @@ namespace ScreenTask
                 var resPath = ctx.Request.Url.LocalPath;
                 if (resPath == "/") // Route The Root Dir to the Index Page
                     resPath += "index.html";
-                var page = Application.StartupPath + "/WebServer" + resPath;
+                var page = @"C:\projects\ScreenTask\WebScreenTask\WebScreenTask\Images" + resPath;
                 bool fileExist;
                 lock (locker)
                     fileExist = File.Exists(page);
@@ -239,7 +239,7 @@ namespace ScreenTask
             {
                 var bmp = ScreenCapturePInvoke.CaptureFullScreen(true);
                 rwl.AcquireWriterLock(Timeout.Infinite);
-                bmp.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", ImageFormat.Jpeg);
+                bmp.Save(@"C:\projects\ScreenTask\WebScreenTask\WebScreenTask\Images\ScreenTask.jpg", ImageFormat.Jpeg);
                 rwl.ReleaseWriterLock();
                 if (isPreview)
                 {
@@ -258,7 +258,7 @@ namespace ScreenTask
                    g.CopyFromScreen(new Point(bounds.X, 0), new Point(bounds.Y, 0), bounds.Size);
                 }
                 rwl.AcquireWriterLock(Timeout.Infinite);
-                bitmap.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", ImageFormat.Jpeg);
+                bitmap.Save(@"C:\projects\ScreenTask\WebScreenTask\WebScreenTask\Images\ScreenTask.jpg", ImageFormat.Jpeg);
                 rwl.ReleaseWriterLock();
 
                 if (isPreview)
