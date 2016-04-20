@@ -42,7 +42,7 @@ namespace ScreenTask
             isMouseCapture = false;
             initializeMonitors();
         }
-
+        // инициализация мониторов
         private void initializeMonitors()
         {
             // Get all monitors 
@@ -59,7 +59,7 @@ namespace ScreenTask
             comboBox_Monitors.ValueMember = "DeviceName";
             comboBox_Monitors.DataSource = monitorNames;
         }
-
+        // кнопка запуска webserver
         private async void btnStartServer_Click(object sender, EventArgs e)
         {
 
@@ -96,6 +96,7 @@ namespace ScreenTask
                 Log("Error! : " + ex.Message);
             }
         }
+        // основной метод запуска webserver
         private async Task StartServer()
         {
             //serv = serv??new HttpListener();
@@ -216,6 +217,8 @@ namespace ScreenTask
             }
 
         }
+
+        #region Захват скриншота
         private async Task CaptureScreenEvery(int msec)
         {
             while (isWorking)
@@ -268,6 +271,8 @@ namespace ScreenTask
 
             }
         }
+        #endregion 
+
         private string GetIPv4Address()
         {
             string IP4Address = String.Empty;
@@ -283,6 +288,7 @@ namespace ScreenTask
 
             return IP4Address;
         }
+        // получение всех ip адресов для отображения в combobox
         private List<Tuple<string, string>> GetAllIPv4Addresses()
         {
             List<Tuple<string, string>> ipList = new List<Tuple<string, string>>();
@@ -325,6 +331,7 @@ namespace ScreenTask
             });
 
         }
+
         private string RunCMD(string cmd)
         {
             Process proc = new Process();
@@ -341,12 +348,13 @@ namespace ScreenTask
             proc.Close();
             return res;
         }
+        // логирование событий
         private void Log(string text)
         {
             txtLog.Text += DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + " : " + text + "\r\n";
 
         }
-
+        // остановить сервер
         private void btnStopServer_Click(object sender, EventArgs e)
         {
             isWorking = false;
@@ -355,7 +363,7 @@ namespace ScreenTask
             btnStopServer.Enabled = false;
             Log("Server Stoped.");
         }
-
+        // private
         private void cbPrivate_CheckedChanged(object sender, EventArgs e)
         {
             if (cbPrivate.Checked == true)
@@ -371,7 +379,7 @@ namespace ScreenTask
                 isPrivateTask = false;
             }
         }
-
+        // preview
         private void cbPreview_CheckedChanged(object sender, EventArgs e)
         {
             if (cbPreview.Checked == true)
@@ -384,7 +392,7 @@ namespace ScreenTask
                 imgPreview.Image = imgPreview.InitialImage;
             }
         }
-
+        // захват области под мышью
         private void cbCaptureMouse_CheckedChanged(object sender, EventArgs e)
         {
             if (cbCaptureMouse.Checked)
@@ -413,6 +421,13 @@ namespace ScreenTask
             comboIPs.SelectedIndex = comboIPs.Items.Count - 1;
         }
 
+
+
+        /// <summary>
+        ///  Лабуда
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void imgPreview_Click(object sender, EventArgs e)
         {
             if (imgPreview.Dock == DockStyle.None)
