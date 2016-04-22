@@ -21,19 +21,27 @@ namespace WebApplication2
         [System.Web.Services.WebMethod]
         public static string TakeScreenshot()
         {
-           // string nameSelectedMonitor = comboBox_Monitors.SelectedValue.ToString();
-            Rectangle bounds = Screen.AllScreens.First().Bounds;
-            using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
+            try
             {
-                File.Delete(@"C:\projects\git\ScreenTaskRepo\WebScreenTask\WebScreenTask\Images\ScreenTask.jpeg");
-                using (Graphics g = Graphics.FromImage(bitmap))
+                // string nameSelectedMonitor = comboBox_Monitors.SelectedValue.ToString();
+                Rectangle bounds = Screen.AllScreens.First().Bounds;
+                using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
                 {
-                    g.CopyFromScreen(new Point(bounds.X, 0), new Point(bounds.Y, 0), bounds.Size);
+                    File.Delete(@"C:\projects\git\ScreenTaskRepo\WebScreenTask\WebScreenTask\Images\ScreenTask.jpeg");
+                    using (Graphics g = Graphics.FromImage(bitmap))
+                    {
+                        g.CopyFromScreen(new Point(bounds.X, 0), new Point(bounds.Y, 0), bounds.Size);
+                    }
+                    bitmap.Save(@"C:\projects\git\ScreenTaskRepo\WebScreenTask\WebScreenTask\Images\ScreenTask.jpeg", ImageFormat.Jpeg);
                 }
-                bitmap.Save(@"C:\projects\git\ScreenTaskRepo\WebScreenTask\WebScreenTask\Images\ScreenTask.jpeg", ImageFormat.Jpeg);
             }
+            catch (Exception ex)
+            {
+                
+            }
+       
             return "";
         }
-        bool 
+  
     }
 }

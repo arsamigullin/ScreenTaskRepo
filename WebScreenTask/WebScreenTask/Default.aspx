@@ -10,7 +10,7 @@
     <meta name="author" content="Eslam Hamouda">
     <title>Screen Task</title>
 
-    <link href="Styles/bootstrap.min.css" rel="stylesheet" />
+    <link href="bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
             padding-top: 5px;
@@ -114,42 +114,32 @@
 
         var refreshInterval = 500;
 
-        var timer = setInterval(function () {
-            HandleIT();
-            var ImagePreview = document.getElementById('imgPrev');
-            ImagePreview.src = 'Images/ScreenTask.jpeg?rand=' + Math.random();
-        }, refreshInterval);
+        var timer = null;
+        setupIntv();
 
-
-        var btn = document.getElementById('btnStartStop');
-
-        btn.onclick = function () {
-            if (btn.getAttribute('data-state') == 'stop') {
-                btn.setAttribute('data-state', 'start');
+        function startStop(btn) {
+            debugger;
+            if (btn.className == "btn btn-lg btn-danger") {
+               // btn.setAttribute('data-state', 'start');
                 btn.className = "btn btn-lg btn-success";
-                btn.innerHTML = "Start Watching!";
+                btn.value = "Start Watching!";
                 clearInterval(timer);
                 timer = null;
             } else {
-                btn.setAttribute('data-state', 'stop');
+               // btn.setAttribute('data-state', 'stop');
                 btn.className = "btn btn-lg btn-danger";
-                btn.innerHTML = "Stop Watching!";
-                timer = setInterval(function () {
-                    HandleIT();
-                    var ImagePreview = document.getElementById('imgPrev');
-                    ImagePreview.src = 'Images/ScreenTask.jpeg?rand=' + Math.random();
-                }, refreshInterval);
+                btn.value = "Stop Watching!";
+                setupIntv();
             }
 
         };
 
-        var btnSetTimer = document.getElementById('btnSetTimer');
 
-
-        btnSetTimer.onclick = function () {
+        function setTimer() {
+            debugger;
             var txtInterval = document.getElementById('txtInterval');
             refreshInterval = txtInterval.value;
-
+            setupIntv();
         };
 
 
@@ -185,7 +175,15 @@
             requestFullScreen(viewer);
         };
 
-
+        function setupIntv() {
+            clearInterval(timer);
+            timer = null;
+            timer = setInterval(function () {
+                HandleIT();
+                var ImagePreview = document.getElementById('imgPrev');
+                ImagePreview.src = 'Images/ScreenTask.jpeg?rand=' + Math.random();
+            }, refreshInterval);
+        }
 
         function HandleIT() {
             PageMethods.TakeScreenshot(onSucess, onError);
@@ -234,14 +232,15 @@
                     <div class="row">
 
                         <div class="col-lg-4 col-md-4 col-sm-4">
-                            <button id="btnStartStop" class="btn btn-lg btn-danger" data-state="stop">Stop Watching!</button>
+                            <asp:Button id="btnStartStop" OnClientClick="startStop(this); return false;"  Text="Stop Watching!"  CssClass="btn btn-lg btn-danger"  runat="server" />
                         </div>
 
                         <div id="intervalSection" class="col-lg-4 col-md-4 col-sm-4">
                             <div class="input-group input-group-sm">
                                 <input id="txtInterval" type="text" class="form-control" placeholder="Interval in Mellisecond" value="500">
                                 <div class="input-group-btn">
-                                    <button id="btnSetTimer" type="button" class="btn btn-default btn-md dropdown-toggle" data-toggle="dropdown">Set Refresh Interval(ms)</button>
+                                             <asp:Button id="btnSetTimer" OnClientClick="setTimer(); return false;"  Text="Set Refresh Interval(ms)"  CssClass="btn btn-default btn-md dropdown-toggle"  runat="server" />
+
                                 </div>
                                 <!-- /btn-group -->
                             </div>
