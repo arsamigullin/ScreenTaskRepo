@@ -11,6 +11,7 @@
     <title>Screen Task</title>
 
     <link href="bootstrap.min.css" rel="stylesheet" />
+    <script src="Scripts/jquery-2.2.3.min.js"></script>
     <style>
         body {
             padding-top: 5px;
@@ -109,9 +110,9 @@
             }
         }
     </style>
-
+    
     <script type="text/javascript">
-
+     
         var refreshInterval = 500;
 
         var timer = null;
@@ -180,30 +181,60 @@
             timer = null;
             timer = setInterval(function () {
                 HandleIT();
+                var hidf = document.getElementById('<%=hiddenfield.ClientID%>');
+           
                 var ImagePreview = document.getElementById('imgPrev');
-                ImagePreview.src = 'Images/ScreenTask.jpeg?rand=' + Math.random();
+                ImagePreview.src = 'Images/ScreenTask' + hidf.value + '.jpeg?rand=' + Math.random();
             }, refreshInterval);
         }
 
         function HandleIT() {
-            PageMethods.TakeScreenshot(onSucess, onError);
+            debugger;
+            var hidf = document.getElementById('<%=hiddenfield.ClientID%>');
+            var dd_mons = document.getElementById('<%=dd_monitors.ClientID%>');
+          //  var param = "{'prms': ['" + hidf.toString() + "','" + dd_mons.toString() + "']}";
+       
+            PageMethods.TakeScreenshot(hidf.value.toString(), dd_mons.value.toString(), onSucess, onError);
+            //$.ajax({
+            //    type: "POST",
+            //    url: "TaskeScreenShots.asmx/TakeScreenshot",
+            //    data: param,
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    success: function (data) {
+            //        console.log(data);
+            //        alert(data.d);
+            //    },
+            //    error: function (xhr, textStatus, errorThrown) {
+            //        console.log(textStatus + " : " + errorThrown);
+            //    }
+            //});
+
             function onSucess(result) {
                // alert(result);
             }
             function onError(result) {
-               // alert('Something wrong.');
+                alert('Something wrong.');
             }
         }
     </script>
 </head>
 <body>
     <form id="form1" runat="server">
+        <asp:HiddenField EnableViewState="True" ID="hiddenfield" runat="server" Value="string"/>
+           <script type="text/javascript">
+               $(document).ready(function () {
+                   debugger;
+                   var hidf = document.getElementById('<%=hiddenfield.ClientID%>');
+                   hidf.value = Math.random();
+               });
+                    </script>
         <div>
             <p>Say bye-bey to Postbacks.</p>
             <asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true"></asp:ScriptManager>
         </div>
         <div class="container">
-
+         
             <div class="masthead">
                 <h1 class="text-muted">Screen Task</h1>
                 <ul class="nav nav-justified">
@@ -221,7 +252,7 @@
                 <p class="text-center"><em>Hope This Helps You On Your Work!</em></p>
                 <p>Send Your Feedback to : EslaMx7@Gmail.Com</p>
             </div>
-
+            
             <hr />
             <!-- Preview -->
             <div id="Viewer" class="imgPreview">
@@ -230,9 +261,11 @@
                 <div class="well text-center">
 
                     <div class="row">
-
+                       
                         <div class="col-lg-4 col-md-4 col-sm-4">
                             <asp:Button id="btnStartStop" OnClientClick="startStop(this); return false;"  Text="Stop Watching!"  CssClass="btn btn-lg btn-danger"  runat="server" />
+                            <asp:DropDownList ID="dd_monitors" runat="server" Width="200px" />
+                            <asp:TextBox ID="err" Width="300px" runat="server"></asp:TextBox>
                         </div>
 
                         <div id="intervalSection" class="col-lg-4 col-md-4 col-sm-4">
