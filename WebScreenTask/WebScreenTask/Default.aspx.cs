@@ -10,38 +10,57 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Web.Script.Services;
+using Microsoft.Ajax.Utilities;
 using ScreenTask;
 using WCFTaskScreen;
 using WebScreenTask;
 
 namespace WebApplication2
 {
-    [WebService(Namespace = "http://tempuri.org/")]
-    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
-    [System.ComponentModel.ToolboxItem(false)]
-    // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
-    [System.Web.Script.Services.ScriptService]
+
     public partial class Default : System.Web.UI.Page
     {
-        public static int i;
+        static string uniqSession = "uniqSession";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             initializeMonitors();
         }
 
-        [System.Web.Services.WebMethod]
+        [WebMethod(EnableSession = true)]
         public static string TakeScreenshot(string uniqueSessionVal, string monitorName)
         {
+
             try
             {
-                var path = HttpContext.Current.Request.PhysicalApplicationPath + @"Images\ScreenTask" + uniqueSessionVal +".jpeg";
-                GlobalData.WCFClient.TakeScreenShot(path, monitorName);
+                List<string> uniqList= new List<string>();
+                if (HttpContext.Current.Session[uniqSession] != null)
+                {
+                    uniqList= HttpContext.Current.Session[uniqSession] as List<string>;
+                }
+                string prev="";
+                if (uniqList != null && uniqList.Count > 5)
+                {
+                    
+                    prev = HttpContext.Current.Request.PhysicalApplicationPath + @"Images\ScreenTask" + uniqList[0] + ".jpeg";
+                    uniqList.RemoveAt(0);
+                }
+                var pathCur = HttpContext.Current.Request.PhysicalApplicationPath + @"Images\ScreenTask" + uniqueSessionVal + ".jpeg";
+                if (uniqList != null)
+                {
+                    uniqList.Add(uniqueSessionVal);
+                    HttpContext.Current.Session[uniqSession] = uniqList;
+                }
+                    
+                GlobalData.WCFClient.TakeScreenShot(pathCur, monitorName, prev);
+   
+                return uniqList[0];
             }
             catch (Exception ex)
             {
+                return "";
             }
-
-            return "";
         }
 
         // инициализация мониторов

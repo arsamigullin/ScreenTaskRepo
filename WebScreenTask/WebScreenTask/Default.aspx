@@ -180,21 +180,18 @@
             clearInterval(timer);
             timer = null;
             timer = setInterval(function () {
-                HandleIT();
-                var hidf = document.getElementById('<%=hiddenfield.ClientID%>');
-           
+               HandleIT();
+               var hidf = document.getElementById('<%=sessPrevVal.ClientID%>');
                 var ImagePreview = document.getElementById('imgPrev');
                 ImagePreview.src = 'Images/ScreenTask' + hidf.value + '.jpeg?rand=' + Math.random();
             }, refreshInterval);
         }
 
         function HandleIT() {
-            debugger;
-            var hidf = document.getElementById('<%=hiddenfield.ClientID%>');
+           
             var dd_mons = document.getElementById('<%=dd_monitors.ClientID%>');
           //  var param = "{'prms': ['" + hidf.toString() + "','" + dd_mons.toString() + "']}";
-       
-            PageMethods.TakeScreenshot(hidf.value.toString(), dd_mons.value.toString(), onSucess, onError);
+            PageMethods.TakeScreenshot(Math.random(), dd_mons.value.toString(), onSucess, onError);
             //$.ajax({
             //    type: "POST",
             //    url: "TaskeScreenShots.asmx/TakeScreenshot",
@@ -211,9 +208,12 @@
             //});
 
             function onSucess(result) {
-               // alert(result);
+                var hidf = document.getElementById('<%=sessPrevVal.ClientID%>');
+                debugger;
+                hidf.value = result;
             }
             function onError(result) {
+                good = true;
                 alert('Something wrong.');
             }
         }
@@ -222,6 +222,7 @@
 <body>
     <form id="form1" runat="server">
         <asp:HiddenField EnableViewState="True" ID="hiddenfield" runat="server" Value="string"/>
+        <asp:HiddenField EnableViewState="True" ID="sessPrevVal" runat="server" Value="string"/>
            <script type="text/javascript">
                $(document).ready(function () {
                    debugger;

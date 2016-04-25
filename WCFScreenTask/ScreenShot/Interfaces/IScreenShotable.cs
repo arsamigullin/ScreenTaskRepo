@@ -11,7 +11,7 @@ namespace WCFTaskScreen
     public interface IScreenShotable
     {
         [OperationContract]
-        void TakeScreenShot(string path, string monitor);
+        string TakeScreenShot(string path, string monitor, string prevUniqueSessVa);
 
         [OperationContract]
         List<UserMonitor> GetMonitorsList();
